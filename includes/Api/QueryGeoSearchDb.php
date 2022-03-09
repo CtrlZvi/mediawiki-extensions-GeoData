@@ -43,7 +43,7 @@ class QueryGeoSearchDb extends QueryGeoSearch {
 			$this->addWhere( 'gt_dim < ' . intval( $params['maxdim'] ) );
 		}
 		$primary = $params['primary'];
-		$this->addWhereIf( [ 'gt_primary' => intval( $primary === 'primary' ) ], $primary !== 'all' );
+		$this->addWhereIf( [ 'gt_primary' => (string)intval( $primary === 'primary' ) ], $primary !== 'all' );
 
 		$this->addCoordFilter();
 

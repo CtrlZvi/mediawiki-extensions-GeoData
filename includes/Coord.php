@@ -190,6 +190,12 @@ class Coord implements JsonSerializable {
 			$row['gt_lat_int'] = round( $this->lat * $wgGeoDataIndexGranularity );
 			$row['gt_lon_int'] = round( $this->lon * $wgGeoDataIndexGranularity );
 		}
+		if ( array_key_exists( 'gt_primary', $row ) ) {
+			$row['gt_primary'] = (string)intval( $row['gt_primary'] );
+		}
+		if ( array_key_exists( 'gt_id', $row ) && is_null( $row['gt_id'] ) ) {
+			unset( $row['gt_id'] );
+		}
 		return $row;
 	}
 

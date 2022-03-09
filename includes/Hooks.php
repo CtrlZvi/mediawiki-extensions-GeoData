@@ -48,25 +48,28 @@ class Hooks {
 		if ( $wgGeoDataBackend != 'db' && $wgGeoDataBackend != 'elastic' ) {
 			throw new MWException( "Unrecognized backend '$wgGeoDataBackend'" );
 		}
-		switch ( $updater->getDB()->getType() ) {
-			case 'sqlite':
-			case 'mysql':
-				$dir = __DIR__;
+		$db = $updater->getDB();
+		$dbType = $db->getType(); 
+		$dir = __DIR__;
 
-				if ( $wgGeoDataBackend != 'db' ) {
-					$updater->addExtensionTable( 'geo_tags', "$dir/../sql/externally-backed.sql" );
-					$updater->dropExtensionTable( 'geo_killlist',
-						"$dir/../sql/drop-updates-killlist.sql" );
-				} else {
-					$updater->addExtensionTable( 'geo_tags', "$dir/../sql/db-backed.sql" );
-				}
-				$updater->addExtensionUpdate( [ 'GeoData\Hooks::upgradeToDecimal' ] );
-				break;
-			default:
-				throw new MWException(
-					'GeoData extension currently supports only MySQL and SQLite'
-				);
+		$updater->addExtensionTable( 'geo_tags', "$dir/../sql/$dbType/geo_tags.sql" );
+
+		if ( $wgGeoDataBackend != 'db' ) {
+			$updater->dropExtensionTable( 'geo_killlist',
+				"$dir/../sql/archive/drop-updates-killlist.sql" );
+		} else {
+			// Rather than have two different copies of the table SQL
+			// that are slightly different but may need to both be
+			// updated for future changes, we now have only one copy of
+			// the table SQL and a patch to modify it. However, there
+			// won't be a record of this patch entry for old databases
+			// that are upgraded to this version, so we skip this
+			// modification if (one of) the new rows already exists.
+			if ( !$db->fieldInfo( 'geo_tags', 'gt_lat_int' ) ) {
+				$updater->modifyExtensionTable( 'geo_tags', "$dir/../sql/$dbType/patch-db-backend.sql" );
+			}
 		}
+		$updater->addExtensionUpdate( [ 'GeoData\Hooks::upgradeToDecimal' ] );
 	}
 
 	/**
@@ -84,7 +87,7 @@ class Hooks {
 		// Doesn't support the old API, oh well
 		if ( $field->type() === MYSQLI_TYPE_FLOAT ) {
 			$updater->output( "...upgrading geo_tags coordinates from FLOAT to DECIMAL.\n" );
-			$db->sourceFile( __DIR__ . '/../sql/float-to-decimal.sql' );
+			$db->sourceFile( __DIR__ . '/../sql/archive/float-to-decimal.sql' );
 		} else {
 			$updater->output( "...coordinates are already DECIMAL in geo_tags.\n" );
 		}
