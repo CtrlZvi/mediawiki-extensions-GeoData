@@ -1,0 +1,87 @@
+[
+    {
+        "name": "geo_tags",
+        "comment": "Stores information about geographical coordinates in articles",
+        "columns": [
+            {
+                "name": "gt_id",
+                "comment": "Tag id, needed for selective replacement and paging",
+                "type": "integer",
+                "options": { "unsigned": true, "notnull": true, "autoincrement": true }
+            },
+            {
+                "name": "gt_page_id",
+                "comment": "page_id",
+                "type": "integer",
+                "options": { "unsigned": true, "notnull": true }
+            },
+            {
+                "name": "gt_globe",
+                "comment": "Name of planet or other astronomic body on which the coordinates reside",
+                "type": "string",
+                "options": { "length": 32, "notnull": true }
+            },
+            {
+                "name": "gt_primary",
+                "comment": "Whether this coordinate is primary (defines the principal location of article subject) or secondary (just mentioned in text)",
+                "type": "boolean",
+                "options": { "notnull": true }
+            },
+            {
+                "name": "gt_lat",
+                "comment": "Latitude of the point in degrees",
+                "type": "decimal",
+                "options": { "precision": 11, "scale": 8, "notnull": true }
+            },
+            {
+                "name": "gt_lon",
+                "comment": "Longitude of the point in degrees",
+                "type": "decimal",
+                "options": { "precision": 11, "scale": 8, "notnull": true }
+            },
+            {
+                "name": "gt_dim",
+                "comment": "Approximate viewing radius in meters, gives an idea how large the object is",
+                "type": "integer",
+                "options": { "notnull": false }
+            },
+            {
+                "name": "gt_type",
+                "comment": "Type of the point",
+                "type": "string",
+                "options": { "length": 32, "notnull": false }
+            },
+            {
+                "name": "gt_name",
+                "comment": "Point name on the map",
+                "type": "string",
+                "options": { "length": 255, "notnull": false }
+            },
+            {
+                "name": "gt_country",
+                "comment": "Two character ISO 3166-1 alpha-2 country code",
+                "type": "string",
+                "options": { "fixed": true, "length": 2, "notnull": false }
+            },
+            {
+                "name": "gt_region",
+                "comment": "Second part of ISO 3166-2 region code, up to 3 alphanumeric chars",
+                "type": "string",
+                "options": { "length": 3, "notnull": false }
+            }
+        ],
+        "indexes": [
+            {
+                "name": "gt_page_primary",
+                "columns": [ "gt_page_id", "gt_primary" ],
+                "unique": false
+            },
+            {
+                "name": "gt_page_id_id",
+                "columns": [ "gt_page_id", "gt_id" ],
+                "unique": false
+            }
+        ],
+        "pk": [ "gt_id" ]
+    }
+]
