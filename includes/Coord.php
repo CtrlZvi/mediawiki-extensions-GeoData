@@ -182,6 +182,9 @@ class Coord implements JsonSerializable {
 			$row['gt_lat_int'] = round( $this->lat * $wgGeoDataIndexGranularity );
 			$row['gt_lon_int'] = round( $this->lon * $wgGeoDataIndexGranularity );
 		}
+		if ( array_key_exists( 'gt_id', $row ) && $row['gt_id'] === null ) {
+			unset( $row['gt_id'] );
+		}
 		return $row;
 	}
 

@@ -49,26 +49,20 @@ class Hooks {
 		if ( $wgGeoDataBackend != 'db' && $wgGeoDataBackend != 'elastic' ) {
 			throw new MWException( "Unrecognized backend '$wgGeoDataBackend'" );
 		}
-		switch ( $updater->getDB()->getType() ) {
-			case 'sqlite':
-			case 'mysql':
-				$dir = __DIR__;
-				$dbType = $updater->getDB()->getType();
 
-				if ( $wgGeoDataBackend != 'db' ) {
-					$updater->addExtensionTable( 'geo_tags', "$dir/../sql/$dbType/tables-externally-backed-generated.sql" );
-					$updater->dropExtensionTable( 'geo_killlist',
-						"$dir/../sql/archive/drop-updates-killlist.sql" );
-				} else {
-					$updater->addExtensionTable( 'geo_tags', "$dir/../sql/$dbType/tables-db-backed-generated.sql" );
-				}
-				$updater->addExtensionUpdate( [ 'GeoData\Hooks::upgradeToDecimal' ] );
-				break;
-			default:
-				throw new MWException(
-					'GeoData extension currently supports only MySQL and SQLite'
-				);
+		$dir = __DIR__;
+		$dbType = $updater->getDB()->getType();
+
+		if ( $wgGeoDataBackend != 'db' ) {
+			$updater->addExtensionTable( 'geo_tags', "$dir/../sql/$dbType/tables-externally-backed-generated.sql" );
+			$updater->dropExtensionTable( 'geo_killlist',
+				"$dir/../sql/archive/drop-updates-killlist.sql" );
+			$updater->modifyExtensionTable( 'geo_tags', "$dir/../sql/$dbType/patch-portability-externally-backed.sql" );
+		} else {
+			$updater->addExtensionTable( 'geo_tags', "$dir/../sql/$dbType/tables-db-backed-generated.sql" );
+			$updater->modifyExtensionTable( 'geo_tags', "$dir/../sql/$dbType/patch-portability-db-backed.sql" );
 		}
+		$updater->addExtensionUpdate( [ 'GeoData\Hooks::upgradeToDecimal' ] );
 	}
 
 	/**
