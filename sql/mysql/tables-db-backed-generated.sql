@@ -13,7 +13,7 @@ CREATE TABLE /*_*/geo_tags (
   gt_lon NUMERIC(11, 8) NOT NULL,
   gt_dim INT DEFAULT NULL,
   gt_type VARCHAR(32) DEFAULT NULL,
-  gt_name VARCHAR(255) DEFAULT NULL,
+  gt_name VARBINARY(255) DEFAULT NULL,
   gt_country CHAR(2) DEFAULT NULL,
   gt_region VARCHAR(3) DEFAULT NULL,
   INDEX gt_page_primary (gt_page_id, gt_primary),

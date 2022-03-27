@@ -24,8 +24,8 @@
             {
                 "name": "gt_primary",
                 "comment": "Whether this coordinate is primary (defines the principal location of article subject) or secondary (just mentioned in text)",
-                "type": "boolean",
-                "options": { "notnull": true }
+                "type": "mwtinyint",
+                "options": { "length": 1, "notnull": true }
             },
             {
                 "name": "gt_lat",
@@ -54,7 +54,7 @@
             {
                 "name": "gt_name",
                 "comment": "Point name on the map",
-                "type": "string",
+                "type": "binary",
                 "options": { "length": 255, "notnull": false }
             },
             {
