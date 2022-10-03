@@ -205,6 +205,12 @@ class Coord implements JsonSerializable {
 			$row['gt_lat_int'] = round( $this->lat * $wgGeoDataIndexGranularity );
 			$row['gt_lon_int'] = round( $this->lon * $wgGeoDataIndexGranularity );
 		}
+		// PostgreSQL doesn't allow explicitly writing NULL to autoincrement
+		// notnull columns, like MySQL does. To avoid silent dropping of data,
+		// delete explict null IDs.
+		if ( array_key_exists( 'gt_id', $row ) && $row['gt_id'] === null ) {
+			unset( $row['gt_id'] );
+		}
 		return $row;
 	}
 
